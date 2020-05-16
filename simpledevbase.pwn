@@ -16,6 +16,9 @@
 #define COLOR_YELLOW        0xFFFF00FF
 #define COLOR_PURPLE        0xCC33FFFF
 //========================================================
+new isgod[MAX_PLAYERS];
+
+//========================================================
 
 main()
 print("Gamemode Iniciado!");
@@ -31,18 +34,28 @@ public OnPlayerConnect(playerid)
 	SendClientMessage(playerid, COLOR_WHITE_BLUE, "Disponível em www.github.com/srmilton");
 	SetSpawnInfo(playerid, 0, 0, 1958.33, 1343.12, 15.36, 269.15, 0, 0, 0, 0, 0, 0 );
 	SpawnPlayer(playerid);
+	isgod[playerid] = 1;
+	return true;
 }
 
 public OnPlayerSpawn(playerid)
 {
     SetPlayerPos(playerid, 1958.33, 1343.12, 15.36);
 	TogglePlayerControllable(playerid,1);
+	if(isgod[playerid] == 1) SetPlayerHealth(playerid,99999);
+	return true;
 }
 
 public OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ)
 {
     SetPlayerPosFindZ(playerid, fX, fY, fZ+2);
     return 1;
+}
+
+public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart)
+{
+	if(isgod[playerid] == 1) SetPlayerHealth(playerid,99999);
+	return true;
 }
 
 stock ReturnName(playerid) //Maneira certa de retornar nomes durantes as funções
@@ -96,5 +109,47 @@ CMD:trazer(playerid, params[])
  	SetPlayerPos(pid, x, y+2, z);
  	return true;
 }
+
+CMD:criarcarro(playerid, params[])
+{
+	new id;
+	new Float:x, Float:y, Float:z;
+	if (sscanf(params, "d", id))
+	{
+	    return SendClientMessage(playerid, COLOR_YELLOW, "Use /carro [ID].");
+	}
+	if(id < 400 || id > 611) return SendClientMessage(playerid, COLOR_YELLOW, "Escolha um ID maior que 400 e menor que 611.");
+	
+	GetPlayerPos(playerid, x, y, z);
+	CreateVehicle(id, x, y+2, z+1, 82.2873, -1, -1, -1);
+	return true;
+}
+
+CMD:gmx()
+{
+	GameModeExit();
+	print(" ");
+	print("GMX Realizado");
+	print(" ");
+	return true;
+}
+
+CMD:god(playerid)
+{
+	if(isgod[playerid] == 1)
+	{
+    SetPlayerHealth(playerid,100);
+    SendClientMessage(playerid, COLOR_YELLOW, "GodMode desativado.");
+    isgod[playerid] = 0;
+	}
+	else if(isgod[playerid] == 0)
+	{
+	SetPlayerHealth(playerid,99999);
+    SendClientMessage(playerid, COLOR_YELLOW, "GodMode ativado.");
+    isgod[playerid] = 1;
+	}
+	return true;
+}
+//==================================================================================================================
 
 
